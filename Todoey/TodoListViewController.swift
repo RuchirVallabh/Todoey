@@ -11,7 +11,7 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     //Mark: 1 Todo items array
-    let itemArray = ["Find Mike", "Buy Eggs", "Bla", "bla"]
+    var itemArray = ["Find Mike", "Buy Eggs", "Bla", "bla"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +54,37 @@ class TodoListViewController: UITableViewController {
     } //action when a cell is pressed/selected/tapped
     
     
+    
+    //Mark: - 4 add BarButton to add New Items
+    
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+         var textField = UITextField() //*local var
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)// to add new Item and append it to itemArray
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //what happens when user clicks "Add Item" Button on this UIAlet
+            print("new Todoey Item Added")
+            
+            print(textField.text!)//force unwrap dangerous
+            self.itemArray.append(textField.text ?? "New Item")//if textfield.text is empty return "new item, else return textfield.text
+            
+            self.tableView.reloadData()//reloads table view with added item.
+            
+        }//completion block when add item is pressed
+        
+        alert.addTextField { (alertTextField) /*our name given to alert's textfield. it will be limited to this closure*/ in
+            alertTextField.placeholder = "Create item"
+            textField = alertTextField
+            
+            print(alertTextField.text ?? "see addTextField closure")  //<- * print will not give any output as nothing is given to textField till user pressed add new item
+                           }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+        
+    }
     
 }
 
