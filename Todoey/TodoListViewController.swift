@@ -10,13 +10,27 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     
+    
+    
     //Mark: 1 Todo items array
     var itemArray = ["Find Mike", "Buy Eggs", "Bla", "bla"]
+    
+    //Mark: 5 Create user defaults
+    let defaults = UserDefaults.standard //interface to user defaults data base of key value pairs srored persistently
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [String]//8
+        {// not executed if there is no defaults plist so avoiding crash
+        itemArray = items
+        }// info now persists in plist file in sandbox
     }
+    
+    
+    
+    
     
     //Mark: - 2 tableview datasource methods
     
@@ -28,6 +42,9 @@ class TodoListViewController: UITableViewController {
         cell.textLabel?.text = itemArray[indexPath.row]// set cell's lable
         return cell //creating a reusable cell
     }
+
+    
+    
     
     
     
@@ -36,7 +53,6 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(indexPath.row)
         print(itemArray[indexPath.row])
-        
         
         //adds checkmark to cell when selected
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark //if cell has checkmark
@@ -48,10 +64,10 @@ class TodoListViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)// flash/blink effect when selected
         
-       
-        
-        
-    } //action when a cell is pressed/selected/tapped
+       } //action when a cell is pressed/selected/tapped
+    
+    
+    
     
     
     
@@ -70,6 +86,8 @@ class TodoListViewController: UITableViewController {
             
             print(textField.text!)//force unwrap dangerous
             self.itemArray.append(textField.text ?? "New Item")//if textfield.text is empty return "new item, else return textfield.text
+            
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")//7 Save itemArray to userdefaults
             
             self.tableView.reloadData()//reloads table view with added item.
             
