@@ -29,7 +29,6 @@ class TodoListViewController: UITableViewController {
         
         let newItem = Item()
         newItem.title = "Find mike"
-        newItem.done = true
         itemArray.append(newItem)
         
         let newItem2 = Item()
@@ -43,10 +42,10 @@ class TodoListViewController: UITableViewController {
         
         
         
-//        if let items = defaults.array(forKey: "TodoListArray") as? [String]//8
-//        {// not executed if there is no defaults plist so avoiding crash
-//        itemArray = items
-//        }// info now persists in plist file in sandbox
+        if let items = defaults.array(forKey: "TodoListArray") as? [Item]//8
+        {// not executed if there is no defaults plist so avoiding crash
+        itemArray = items
+        }// info now persists in plist file in sandbox
         
         
     }
