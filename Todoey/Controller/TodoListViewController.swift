@@ -75,11 +75,23 @@ class TodoListViewController: UITableViewController{
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-//        todoItems[indexPath.row].done = !todoItems[indexPath.row].done
-//
-//        saveItems()
-//   Different way of udating in realm
-     
+        
+        //Mark: - Updating Done Status Data Method
+        if let item = todoItems?[indexPath.row]{
+            do{
+                try realm.write {
+                    
+                    //realm.delete(item) // to delete Item
+                    
+                    item.done = !item.done
+                }
+            }catch {
+                print("Error Updating Done Status of selected item, \(error)")
+            }
+        }
+        
+        tableView.reloadData()
+        
         tableView.deselectRow(at: indexPath, animated: true)
         
        }
@@ -113,6 +125,8 @@ class TodoListViewController: UITableViewController{
                     
                     newItem.title = textField.text!
                     //newItem.done = false// Already Selected as Default
+                    newItem.dateCreated = Date()
+                    
                     currentCategory.items.append(newItem)
                                 }
                  }catch {
@@ -166,45 +180,32 @@ class TodoListViewController: UITableViewController{
 //MARK: - Search Bar method
 
 
-//extension TodoListViewController: UISearchBarDelegate {
-//
-//
-//
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {//delegate method
-//
-//        let request : NSFetchRequest<Item>  = Item.fetchRequest()
-//
-//       let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        //print(searchBar.text!)
-//
-//
-////        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-////        request.sortDescriptors = [sortDescriptor]  //make sure its sortDescriptors i.e plural
-//        //                       ↓
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-////        do{
-////            itemArray = try context.fetch(request)
-////        }catch{
-////            print("error fetching data from context using searchBar \(error)")
-////        }
-////        tableView.reloadData()
-//
-//        loadItems(with: request, predicate: predicate)
-//    }
-//
-//
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchBar.text?.count == 0 {
-//            loadItems()
-//
-//            DispatchQueue.main.async {
-//                searchBar.resignFirstResponder()//deselects searchbar so that keyboard goes away
-//            }//DispatchQueue assigns processes to different threads so that app does not freeze while background process is running. i.e it brings this into foreground
-//
-//        }
-//    }
-//
-//
-//}
-//
+extension TodoListViewController: UISearchBarDelegate {
+
+
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {//delegate method
+        
+//        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        
+        
+         todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)        //Sorts Filtered in ascending order of date of creation
+        
+        tableView.reloadData()
+    }
+
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()//deselects searchbar so that keyboard goes away
+            }//DispatchQueue assigns processes to different threads so that app does not freeze while background process is running. i.e it brings this into foreground
+
+        }
+    }
+
+
+}
+
