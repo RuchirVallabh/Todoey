@@ -16,7 +16,7 @@ class TodoListViewController: UITableViewController{
     
     var selectedCategory : Category? {
         didSet{
-             loadItems()//calling without parameter
+            // loadItems()//calling without parameter
         }
     }
   
@@ -97,15 +97,15 @@ class TodoListViewController: UITableViewController{
             // Mark: Core Data ADD ITEM / CREATE
             
             
-            let  newItem = Item(context: self.context)
-            
-           
-            newItem.title = textField.text!
-            newItem.done = false// As done property of item entity is not optional
-            newItem.parentCategory = self.selectedCategory
-            
-            self.itemArray.append(newItem)
-       
+//            let  newItem = Item(context: self.context)
+//
+//
+//            newItem.title = textField.text!
+//            newItem.done = false// As done property of item entity is not optional
+//            newItem.parentCategory = self.selectedCategory
+//
+//            self.itemArray.append(newItem)
+//
             self.saveItems()
            
         }
@@ -153,30 +153,30 @@ class TodoListViewController: UITableViewController{
 //         }
     
               //       Changed to
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil)//giving default value
-    {
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-//        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates:  [categoryPredicate, predicate])
+//    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil)//giving default value
+//    {
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
 //
+////        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates:  [categoryPredicate, predicate])
+////
+////
+////        request.predicate = compoundPredicate
 //
-//        request.predicate = compoundPredicate
-        
-        if let addtionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, addtionalPredicate])
-        }else{
-            request.predicate = categoryPredicate
-        }
-        
-        do{
-            itemArray = try context.fetch(request)
-        }catch{
-            print("error fetching data from context \(error)")
-        }
-        
-        tableView.reloadData()
-        
-    }
+//        if let addtionalPredicate = predicate {
+//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, addtionalPredicate])
+//        }else{
+//            request.predicate = categoryPredicate
+//        }
+//
+//        do{
+//            itemArray = try context.fetch(request)
+//        }catch{
+//            print("error fetching data from context \(error)")
+//        }
+//
+//        tableView.reloadData()
+//
+//    }
 
     
     
@@ -186,45 +186,45 @@ class TodoListViewController: UITableViewController{
 //MARK: - Search Bar method
 
 
-extension TodoListViewController: UISearchBarDelegate {
-    
-   
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {//delegate method
-        
-        let request : NSFetchRequest<Item>  = Item.fetchRequest()
-        
-       let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        //print(searchBar.text!)
-       
-        
-//        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-//        request.sortDescriptors = [sortDescriptor]  //make sure its sortDescriptors i.e plural
-        //                       ↓
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-//        do{
-//            itemArray = try context.fetch(request)
-//        }catch{
-//            print("error fetching data from context using searchBar \(error)")
+//extension TodoListViewController: UISearchBarDelegate {
+//
+//
+//
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {//delegate method
+//
+//        let request : NSFetchRequest<Item>  = Item.fetchRequest()
+//
+//       let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        //print(searchBar.text!)
+//
+//
+////        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+////        request.sortDescriptors = [sortDescriptor]  //make sure its sortDescriptors i.e plural
+//        //                       ↓
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//
+////        do{
+////            itemArray = try context.fetch(request)
+////        }catch{
+////            print("error fetching data from context using searchBar \(error)")
+////        }
+////        tableView.reloadData()
+//
+//        loadItems(with: request, predicate: predicate)
+//    }
+//
+//
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0 {
+//            loadItems()
+//
+//            DispatchQueue.main.async {
+//                searchBar.resignFirstResponder()//deselects searchbar so that keyboard goes away
+//            }//DispatchQueue assigns processes to different threads so that app does not freeze while background process is running. i.e it brings this into foreground
+//
 //        }
-//        tableView.reloadData()
-        
-        loadItems(with: request, predicate: predicate)
-    }
-    
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            loadItems()
-            
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()//deselects searchbar so that keyboard goes away
-            }//DispatchQueue assigns processes to different threads so that app does not freeze while background process is running. i.e it brings this into foreground
-            
-        }
-    }
-    
-    
-}
-
+//    }
+//
+//
+//}
+//
