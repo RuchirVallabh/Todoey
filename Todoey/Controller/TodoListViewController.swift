@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class TodoListViewController: UITableViewController{
+class TodoListViewController: SwipeTableViewController{
     
     
     
@@ -17,6 +18,10 @@ class TodoListViewController: UITableViewController{
     let realm = try! Realm()
     
     var todoItems : Results<Item>?
+    
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     
     
     
@@ -32,13 +37,67 @@ class TodoListViewController: UITableViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-
+      
+        tableView.separatorStyle = .none
+        
+        
+        
     }
     
     
     
     
+    
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+         title = selectedCategory?.name
+        
+        
+         guard let colourHex = selectedCategory?.color else { fatalError()}
+            
+        
+        updateNavBar(withHexCode: colourHex)
+            
+        
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        
+        
+        updateNavBar(withHexCode: "FF8AD8")
+        
+//        navigationController?.navigationBar.barTintColor = orignalColour
+//
+//        navigationController?.navigationBar.tintColor = FlatWhite()
+//
+//        navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: FlatWhite()]
+    }
+    
+    
+    
+    //Mark: - Nav BAr Setup Code
+    
+    func  updateNavBar(withHexCode colourHexCode: String)  {
+        
+        
+         guard let navBar = navigationController?.navigationBar else{fatalError("Navigation Controller Does Not Exist")}
+        
+        guard let navBarColour = UIColor(hexString: colourHexCode) else {fatalError()}
+        
+        navBar.barTintColor = navBarColour
+        
+        navBar.tintColor = ContrastColorOf(navBarColour, returnFlat: true)
+        
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: ContrastColorOf(navBarColour, returnFlat: true)]
+        
+        searchBar.barTintColor = navBarColour
+        
+        
+    }
     
     
     //Mark: - 2 tableview datasource methods
@@ -52,8 +111,8 @@ class TodoListViewController: UITableViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
       
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
-      
+       
+       let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = todoItems?[indexPath.row] //if item is not nil then execute
         {
@@ -61,10 +120,18 @@ class TodoListViewController: UITableViewController{
         cell.textLabel?.text = item.title
      
         cell.accessoryType = item.done ? .checkmark : .none
+            
+            if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: (CGFloat(indexPath.row) / CGFloat(todoItems!.count)) ){
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
+            
         }
         else {
             cell.textLabel?.text = "No Items Added"
         }
+        
+        cell.backgroundColor = UIColor.randomFlat
         
         return cell
     }
@@ -95,6 +162,34 @@ class TodoListViewController: UITableViewController{
         tableView.deselectRow(at: indexPath, animated: true)
         
        }
+    
+    
+    
+    
+    //Mark: Delete data from Swipe
+    
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        super.updateModel(at: indexPath)// print statement in superclass will not be shown without super keyword as we are overriding the func in superclass
+        
+        if let itemForDeletion = self.todoItems?[indexPath.row]{
+            
+            do{
+                try realm.write {
+                    print("deleted from sub class")
+                    realm.delete(itemForDeletion) // to delete Item
+                    
+                }
+            }catch {
+                print("Error Deleting item, \(error)")
+            }
+            
+        }
+        
+    }
+    
+    
     
     
     
